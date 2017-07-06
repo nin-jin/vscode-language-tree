@@ -1,0 +1,26 @@
+{
+    "name": "vscode-language-tree",
+    "displayName": "vscode-language-tree",
+    "description": "Tree format support",
+    "version": "0.0.1",
+    "publisher": "nin-jin",
+    "engines": {
+        "vscode": "^1.13.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "tree",
+            "aliases": ["Tree", "tree"],
+            "extensions": [".tree"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "tree",
+            "scopeName": "source.tree",
+            "path": "./syntaxes/tree.tmLanguage.json"
+        }]
+    }
+}

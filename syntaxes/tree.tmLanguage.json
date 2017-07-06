@@ -1,0 +1,44 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Tree",
+	"patterns": [
+		{ "include": "#line" }
+	],
+	"repository": {
+		"line": {
+    		"begin": "^\t*",
+    		"end": "\\n",
+    		"name": "tree.meta.structure.list",
+    		"patterns": [
+      			{ "include": "#data" },
+				{ "include": "#punctuation" },
+      			{ "include": "#keyword" },
+      			{ "include": "#structure" },
+      			{ "match": " +", "name": "separator.tree" }
+    		]
+		},
+		"punctuation": {
+    		"match": "[-`~!@#$%\\^&*()_=+\\\\|/?\"';:{}\\[\\]<>,.]+(?![^ \\t\\n\\\\])",
+    		"name": "variable.language.tree",
+			"patterns": []
+		},
+  		"keyword": {
+    		"match": "[-`~!@#$%\\^&*()_=+\\\\|/?\"';:{}\\[\\]<>,.][^ \\t\\n\\\\]+",
+    		"name": "keyword.control.tree",
+			"patterns": []
+		},
+  		"structure": {
+    		"match": "[^ \\t\\n\\\\]+",
+    		"name": "variable.other.tree",
+			"patterns": [
+      			{ "include": "#punctuation" }
+			]
+		},
+  		"data": {
+			"match": "\\\\[^\\n]*",
+			"name": "string.unquoted.tree",
+			"patterns": []
+		}
+	},
+	"scopeName": "source.tree"
+}
