@@ -2,7 +2,7 @@
     "name": "vscode-language-tree",
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "nin-jin",
     "engines": {
         "vscode": "^1.13.0"
