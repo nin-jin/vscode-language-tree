@@ -18,18 +18,18 @@
     		]
 		},
 		"punctuation": {
-    		"match": "[-`~!@#$%\\^&*()_=+\\\\|/?\"';:{}\\[\\]<>,.]+(?![^ \\t\\n\\\\])",
-    		"name": "variable.language.tree",
+    		"match": "[-`~!@#$%\\^&*()_=+|/?\"';:{}\\[\\]<>,.]+(?![^ \\t\\n\\\\])",
+    		"name": "operator.language.tree",
 			"patterns": []
 		},
   		"keyword": {
-    		"match": "[-`~!@#$%\\^&*()_=+\\\\|/?\"';:{}\\[\\]<>,.][^ \\t\\n\\\\]+",
+    		"match": "[`~!@#$%\\^&*()_=+|/?\"';:{}\\[\\]<>,.][^ \\t\\n\\\\]+",
     		"name": "keyword.control.tree",
 			"patterns": []
 		},
   		"structure": {
     		"match": "[^ \\t\\n\\\\]+",
-    		"name": "variable.other.tree",
+    		"name": "variable.other.property",
 			"patterns": [
       			{ "include": "#punctuation" }
 			]

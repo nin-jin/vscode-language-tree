@@ -8,19 +8,62 @@
         "vscode": "^1.13.0"
     },
     "categories": [
-        "Languages"
+        "Programming Languages"
     ],
+    "activationEvents": [
+        "onLanguage:tree"
+    ],
+    "main": "./out/extension.js",
+    "configurationDefaults": {
+        "tree": {
+            "editor.semanticHighlighting.enabled": true
+        }
+    },
     "contributes": {
-        "languages": [{
-            "id": "tree",
-            "aliases": ["Tree", "tree"],
-            "extensions": [".tree"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "tree",
-            "scopeName": "source.tree",
-            "path": "./syntaxes/tree.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "tree",
+                "aliases": [
+                    "Tree",
+                    "tree"
+                ],
+                "extensions": [
+                    ".tree"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "semanticTokenTypes": [
+            {
+                "id": "invalid",
+                "description": "Invalid syntax."
+            }
+        ],
+        "semanticTokenScopes": [
+            {
+                "language": "tree",
+                "scopes": {
+                    "invalid": ["invalid.illegal.background"]
+                }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "tree",
+                "scopeName": "source.tree",
+                "path": "./syntaxes/tree.tmLanguage.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+        "@types/node": "^12.12.0",
+        "@types/vscode": "^1.42.0",
+        "typescript": "^4.2.2",
+        "mol_tree2": "^0.0.5"
     }
 }
