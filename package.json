@@ -2,10 +2,11 @@
     "name": "vscode-language-tree",
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
+    "repository": "https://github.com/nin-jin/vscode-language-tree",
     "version": "0.0.2",
     "publisher": "nin-jin",
     "engines": {
-        "vscode": "^1.13.0"
+        "vscode": "^1.42.0"
     },
     "categories": [
         "Programming Languages"
