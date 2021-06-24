@@ -3,7 +3,7 @@
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
     "repository": "https://github.com/nin-jin/vscode-language-tree",
-    "version": "0.0.2",
+    "version": "0.0.5",
     "publisher": "nin-jin",
     "engines": {
         "vscode": "^1.42.0"
@@ -44,7 +44,9 @@
             {
                 "language": "tree",
                 "scopes": {
-                    "invalid": ["invalid.illegal.background"]
+                    "invalid": [
+                        "invalid.illegal.background"
+                    ]
                 }
             }
         ],
