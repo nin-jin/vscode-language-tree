@@ -11,7 +11,7 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
-      - run: mkdir out/node_modules
+      - run: mkdir -p out/node_modules
       - run: cp -r node_modules/mol_tree2 out/node_modules/mol_tree2
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v0
