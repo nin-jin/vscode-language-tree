@@ -3,7 +3,7 @@
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
     "repository": "https://github.com/nin-jin/vscode-language-tree",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "publisher": "nin-jin",
     "engines": {
         "vscode": "^1.76.0"
@@ -60,7 +60,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
+        "compile": "tsc -p ./ && cp node_modules/mol_tree2_lib out/node_modules/mol_tree2_lib",
         "watch": "tsc -watch -p ./"
     },
     "dependencies": {
