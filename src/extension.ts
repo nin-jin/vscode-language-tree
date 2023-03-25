@@ -107,7 +107,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 			for( let kid of node.kids ) visit( kid, override )
 		}
 		
-		visit( tree )
+		for( const kid of tree.kids ) visit( kid )
 		
 		return builder.build()
 	}
