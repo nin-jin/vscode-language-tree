@@ -60,7 +60,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./ && cp node_modules/mol_tree2_lib out/node_modules/mol_tree2_lib",
+        "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./"
     },
     "dependencies": {
