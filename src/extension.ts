@@ -56,8 +56,9 @@ class DocumentSemanticTokensProvider implements
 		token: vscode.CancellationToken,
 	): Promise<vscode.SemanticTokens> {
 		
-		const lang = await getLang( document )
 		const builder = new vscode.SemanticTokensBuilder( legend )
+		const lang = await getLang( document )
+		if( token.isCancellationRequested ) return builder.build()
 		
 		const tree = $.$mol_ambient({
 			$mol_fail: ( error: $.$mol_error_syntax ) => {
@@ -151,23 +152,30 @@ class DocumentSemanticTokensProvider implements
 		const lang = await getLang( document )
 		if( !lang ) return []
 		
-		const langTokens = [
-			... lang.select( '[]', null ).kids,
-			... lang.select( '[:', null ).kids,
-		]
-		
 		const exists = new Set< string >()
+		const langItems = [] as vscode.CompletionItem[]
 		
-		const langItems = langTokens.map( kid => {
+		for( const kid of lang.select( '[]', null ).kids ) {
 			exists.add( kid.type )
 			const item = new vscode.CompletionItem(
 				kid.type,
-				vscode.CompletionItemKind.Class,
+				vscode.CompletionItemKind.Unit,
 			)
 			item.sortText = '1. ' + kid.type
 			item.detail = kid.kids[0]?.text() ?? ''
-			return item
-		} )
+			langItems.push( item )
+		}
+		
+		for( const kid of lang.select( '[:', null ).kids ) {
+			exists.add( kid.type )
+			const item = new vscode.CompletionItem(
+				kid.type,
+				vscode.CompletionItemKind.Variable,
+			)
+			item.sortText = '2. ' + kid.type
+			item.detail = kid.kids[0]?.text() ?? ''
+			langItems.push( item )
+		}
 		
 		const fileTree = files.get( document )
 		if( fileTree ) {
@@ -182,7 +190,7 @@ class DocumentSemanticTokensProvider implements
 					name,
 					vscode.CompletionItemKind.Text,
 				)
-				item.sortText = '2. ' + name
+				item.sortText = '3. ' + name
 				item.detail = 'This file token'
 				langItems.push( item )
 			}
