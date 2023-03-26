@@ -36,7 +36,8 @@ const files = new WeakMap< vscode.TextDocument, $mol_tree2 >()
 
 class DocumentSemanticTokensProvider implements
 	vscode.DocumentSemanticTokensProvider,
-	vscode.HoverProvider
+	vscode.HoverProvider,
+	vscode.CompletionItemProvider
 {
 	
 	handlers = new Set<()=>void>()
@@ -134,13 +135,33 @@ class DocumentSemanticTokensProvider implements
 		let prefixes = lang.select( '[:', null ).kids
 		for( const prefix of prefixes ) {
 			if( !node.type.startsWith( prefix.type ) ) continue
-			return { contents: [ prefix.kids[0].text() ] }
+			return { contents: [ prefix.kids[0]?.text() ?? '' ] }
 		}
 		
 		return { contents: [] }
 		
 	}
-
+	
+	async provideCompletionItems(
+		document: vscode.TextDocument,
+		position: vscode.Position,
+		token: vscode.CancellationToken
+	) {
+		
+		const lang = await getLang( document )
+		if( !lang ) return []
+		
+		return [
+			... lang.select( '[]', null ).kids,
+			... lang.select( '[:', null ).kids,
+		].map( kid => {
+			const item = new vscode.CompletionItem( kid.type )
+			item.detail = kid.kids[0]?.text() ?? ''
+			return item
+		} )
+		
+    }
+	
 }
 
 const getLang = async( document: vscode.TextDocument )=> {
@@ -164,6 +185,17 @@ const find = ( tree: $mol_tree2, row: number, col: number ): $mol_tree2 | null =
 
 const provider = new DocumentSemanticTokensProvider()
 
+export function initialize() {
+	return {
+		"capabilities" : {
+			"completionProvider" : {
+				"resolveProvider": "false",
+				"triggerCharacters": [ " ", "\t" ],
+			},
+		},	
+	}
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDocumentSemanticTokensProvider(
@@ -171,7 +203,8 @@ export function activate(context: vscode.ExtensionContext) {
 			provider,
 			legend,
 		),
-		vscode.languages.registerHoverProvider('tree',  provider )
+		vscode.languages.registerHoverProvider('tree',  provider ),
+		vscode.languages.registerCompletionItemProvider('tree',  provider, ".", "\t" ),
 	)
 }
 

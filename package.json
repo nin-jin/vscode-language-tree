@@ -3,16 +3,13 @@
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
     "repository": "https://github.com/nin-jin/vscode-language-tree",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "publisher": "nin-jin",
     "engines": {
         "vscode": "^1.76.0"
     },
     "categories": [
         "Programming Languages"
-    ],
-    "activationEvents": [
-        "onLanguage:tree"
     ],
     "main": "./out/extension.js",
     "configurationDefaults": {
