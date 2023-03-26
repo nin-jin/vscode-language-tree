@@ -156,28 +156,36 @@ class DocumentSemanticTokensProvider implements
 			... lang.select( '[:', null ).kids,
 		]
 		
+		const exists = new Set< string >()
+		
 		const langItems = langTokens.map( kid => {
+			exists.add( kid.type )
 			const item = new vscode.CompletionItem(
 				kid.type,
 				vscode.CompletionItemKind.Class,
 			)
+			item.sortText = '1. ' + kid.type
 			item.detail = kid.kids[0]?.text() ?? ''
 			return item
 		} )
 		
 		const fileTree = files.get( document )
 		if( fileTree ) {
+			const names = new Set< string >()
 			const visit = ( tree: $mol_tree2 )=> {
-				if( tree.type ) {
-					const item = new vscode.CompletionItem(
-						tree.type,
-						vscode.CompletionItemKind.Text,
-					)
-					langItems.push( item )
-				}
+				if( tree.type && !exists.has( tree.type ) ) names.add( tree.type )
 				for( const kid of tree.kids ) visit( kid )
 			}
 			visit( fileTree )
+			for( const name of names ) {
+				const item = new vscode.CompletionItem(
+					name,
+					vscode.CompletionItemKind.Text,
+				)
+				item.sortText = '2. ' + name
+				item.detail = 'This file token'
+				langItems.push( item )
+			}
 		}
 		
 		return new vscode.CompletionList( langItems )
@@ -207,16 +215,16 @@ const find = ( tree: $mol_tree2, row: number, col: number ): $mol_tree2 | null =
 
 const provider = new DocumentSemanticTokensProvider()
 
-export function initialize() {
-	return {
-		"capabilities" : {
-			"completionProvider" : {
-				"resolveProvider": "false",
-				"triggerCharacters": [ " ", "\t" ],
-			},
-		},	
-	}
-}
+// export function initialize() {
+// 	return {
+// 		"capabilities" : {
+// 			"completionProvider" : {
+// 				"resolveProvider": "false",
+// 				"triggerCharacters": [ " ", "\t" ],
+// 			},
+// 		},	
+// 	}
+// }
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
@@ -226,7 +234,7 @@ export function activate(context: vscode.ExtensionContext) {
 			legend,
 		),
 		vscode.languages.registerHoverProvider('tree',  provider ),
-		vscode.languages.registerCompletionItemProvider('tree',  provider, ".", "\t" ),
+		vscode.languages.registerCompletionItemProvider('tree',  provider, " " ),
 	)
 }
 
