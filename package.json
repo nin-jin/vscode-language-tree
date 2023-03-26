@@ -3,7 +3,7 @@
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
     "repository": "https://github.com/nin-jin/vscode-language-tree",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "publisher": "nin-jin",
     "engines": {
         "vscode": "^1.76.0"
@@ -38,6 +38,18 @@
             {
                 "id": "invalid",
                 "description": "Invalid syntax."
+            }
+        ],
+        "colors": [
+            {
+                "id": "invalid.background",
+                "description": "xxx",
+                "defaults": {
+                    "dark": "#ff0000",
+                    "highContrast": "#ff0000",
+                    "highContrastLight": "#ff0000",
+                    "light": "#ff0000"
+                }
             }
         ],
         "semanticTokenScopes": [

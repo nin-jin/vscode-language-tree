@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import $ from 'mol_tree2';
+import $, { $mol_tree2 } from 'mol_tree2';
 
 let langsPromise: Thenable<$.$mol_tree2>
 
@@ -32,7 +32,12 @@ const legend = new vscode.SemanticTokensLegend([
 	'method', 'macro', 'variable', 'parameter', 'property', 'label', 'invalid'
 ],[])
 
-class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
+const files = new WeakMap< vscode.TextDocument, $mol_tree2 >()
+
+class DocumentSemanticTokensProvider implements
+	vscode.DocumentSemanticTokensProvider,
+	vscode.HoverProvider
+{
 	
 	handlers = new Set<()=>void>()
 	
@@ -50,9 +55,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		token: vscode.CancellationToken,
 	): Promise<vscode.SemanticTokens> {
 		
-		const langs = await langsPromise
-		const langName = document.fileName.replace( /^.*\//, '' ).replace( /\.tree$/, '' ).replace( /^.*\./, '' )
-		const lang = langs.select( langName, 'kind' ).kids[0]
+		const lang = await getLang( document )
 		const builder = new vscode.SemanticTokensBuilder( legend )
 		
 		const tree = $.$mol_ambient({
@@ -68,10 +71,10 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 				return null as never
 			},
 		}).$mol_tree2_from_string( document.getText(), document.fileName )
+		files.set( document, tree )
 		
 		const visit = ( node: $.$mol_tree2, override = '' )=> {
 			
-			// if( node.type || node.value || !node.kids.length ) {
 			let kind = override
 				
 			if( !override ) {
@@ -102,8 +105,6 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 				[],
 			)
 				
-			// }
-			
 			for( let kid of node.kids ) visit( kid, override )
 		}
 		
@@ -111,7 +112,54 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		
 		return builder.build()
 	}
+	
+	async provideHover(
+		document: vscode.TextDocument,
+		position: vscode.Position,
+		token: vscode.CancellationToken,
+	) {
+		
+		const tree = files.get(document)
+		if( !tree ) return { contents: [] }
+		
+		const node = find( tree, position.line + 1, position.character + 1 )
+		if( !node ) return { contents: [] }
+		
+		const lang = await getLang( document )
+		if( !lang ) return { contents: [] }
+		
+		let exact = lang.select( '[]', node.type, null, null ).kids[0]
+		if( exact ) return { contents: [ exact.text() ] }
+		
+		let prefixes = lang.select( '[:', null ).kids
+		for( const prefix of prefixes ) {
+			if( !node.type.startsWith( prefix.type ) ) continue
+			return { contents: [ prefix.kids[0].text() ] }
+		}
+		
+		return { contents: [] }
+		
+	}
 
+}
+
+const getLang = async( document: vscode.TextDocument )=> {
+	const langs = await langsPromise
+	const langName = document.fileName.replace( /^.*\//, '' ).replace( /\.tree$/, '' ).replace( /^.*\./, '' )
+	return langs.select( langName, 'kind' ).kids[0]
+}
+
+const find = ( tree: $mol_tree2, row: number, col: number ): $mol_tree2 | null => {
+	if( row < tree.span.row ) return null
+	if( row > tree.span.row ) return tree.kids.reduce(
+		( res, kid )=> ( res || find( kid, row, col ) ),
+		null as $mol_tree2 | null,
+	)
+	if( col < tree.span.col ) return null
+	return tree.kids.reduce(
+		( res, kid )=> ( res || find( kid, row, col ) ),
+		null as $mol_tree2 | null,
+	) ?? ( col > tree.span.col + tree.span.length ? null : tree )
 }
 
 const provider = new DocumentSemanticTokensProvider()
@@ -119,10 +167,11 @@ const provider = new DocumentSemanticTokensProvider()
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDocumentSemanticTokensProvider(
-			{ language: 'tree', scheme: 'file' },
+			'tree',
 			provider,
 			legend,
-		)
+		),
+		vscode.languages.registerHoverProvider('tree',  provider )
 	)
 }
 
