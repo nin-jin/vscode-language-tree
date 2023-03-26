@@ -3,7 +3,7 @@
     "displayName": "vscode-language-tree",
     "description": "Tree format support",
     "repository": "https://github.com/nin-jin/vscode-language-tree",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "publisher": "nin-jin",
     "engines": {
         "vscode": "^1.76.0"

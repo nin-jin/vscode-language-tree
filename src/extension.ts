@@ -151,16 +151,38 @@ class DocumentSemanticTokensProvider implements
 		const lang = await getLang( document )
 		if( !lang ) return []
 		
-		return [
+		const langTokens = [
 			... lang.select( '[]', null ).kids,
 			... lang.select( '[:', null ).kids,
-		].map( kid => {
-			const item = new vscode.CompletionItem( kid.type )
+		]
+		
+		const langItems = langTokens.map( kid => {
+			const item = new vscode.CompletionItem(
+				kid.type,
+				vscode.CompletionItemKind.Class,
+			)
 			item.detail = kid.kids[0]?.text() ?? ''
 			return item
 		} )
 		
-    }
+		const fileTree = files.get( document )
+		if( fileTree ) {
+			const visit = ( tree: $mol_tree2 )=> {
+				if( tree.type ) {
+					const item = new vscode.CompletionItem(
+						tree.type,
+						vscode.CompletionItemKind.Text,
+					)
+					langItems.push( item )
+				}
+				for( const kid of tree.kids ) visit( kid )
+			}
+			visit( fileTree )
+		}
+		
+		return new vscode.CompletionList( langItems )
+		
+	}
 	
 }
 
